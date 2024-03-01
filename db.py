@@ -12,7 +12,8 @@ class Database():
     async def get_notes(self, user_id: int, limit: int = 5) -> str:
         async with aiosqlite.connect(self.path) as db:
             response = await db.execute("SELECT text FROM notes WHERE user_id = ? LIMIT ?", (user_id, limit))
-            notes = ''
+            res = ''
             for i in await response.fetchall():
-                notes += f'{i[0]}\n'
-            return notes
+                res += f'{i[0]}\n'
+            return res
+        
