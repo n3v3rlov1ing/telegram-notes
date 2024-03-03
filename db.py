@@ -12,8 +12,17 @@ class Database():
     async def get_notes(self, user_id: int, limit: int = 5) -> str:
         async with aiosqlite.connect(self.path) as db:
             response = await db.execute("SELECT text FROM notes WHERE user_id = ? LIMIT ?", (user_id, limit))
-            res = ''
-            for i in await response.fetchall():
-                res += f'{i[0]}\n'
-            return res
+            if len(await response.fetchall()) > 1:
+                res = ''
+                for i in await response.fetchall():
+                    if i is not None:
+                        res += f'{i[0]}\n'
+                return res
+            else:
+                return 'Заметок не найдено'
         
+    async def clear_notes(self) -> None:
+        async with aiosqlite.connect(self.path) as db:
+            await db.execute("DELETE FROM notes")
+            await db.commit()
+            

@@ -22,8 +22,10 @@ async def cmd_note(message: Message, state: FSMContext):
     await state.set_state(Notes.text)
     await message.answer('Напиши текст для заметки', reply_markup=kb.cancel)
     
+
 @router.message(Notes.text)
 async def get_note_text(message: Message, state: FSMContext):
+    print(type(message))
     await db.add_note(message.from_user.id, message.text)
     await message.answer('Заметка добавлена!', reply_markup=ReplyKeyboardRemove())
     await state.clear()
@@ -43,4 +45,7 @@ async def get_note_text(message: Message, state: FSMContext):
         await message.answer('Это не число')
         
     
-    
+@router.message(Command('clear'))
+async def cmd_clear_notes(message: Message):
+    await db.clear_notes()
+    await message.answer('Заметки очищены')    
